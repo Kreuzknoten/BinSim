@@ -1,11 +1,14 @@
 import { Coordinate } from "./General";
 import { AndGate } from "./Component";
+import { Renderer } from "./Renderer";
 
 export class EventHandler {
   canvas: HTMLCanvasElement;
+  renderer: Renderer;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, renderer: Renderer) {
     this.canvas = canvas;
+    this.renderer = renderer;
 
     document.getElementById("canvas")!.addEventListener(
       "mousedown",
@@ -35,14 +38,10 @@ export class EventHandler {
   onCanvasMouseDown(event: any): void {
     let buttonCode = event.button;
     if (buttonCode == 0) {
-      console.log("down");
-
       let mousePosition = this.getCanvasMousePosition(event);
-
-      console.log(mousePosition);
-
-      let gate = new AndGate(mousePosition, this.canvas.getContext("2d")!);
-      gate.draw();
+      let gate = new AndGate(mousePosition);
+      this.renderer.componentTree.addComponent(gate);
+      this.renderer.draw();
     }
   }
 
@@ -58,7 +57,6 @@ export class EventHandler {
   onCanvasMouseUp(event: any): void {
     let buttonCode = event.button;
     if (buttonCode == 0) {
-      console.log("up");
     }
   }
 

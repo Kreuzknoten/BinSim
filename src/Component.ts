@@ -1,11 +1,25 @@
 import { Coordinate } from "./General";
 
-interface IComponent {
+export class ComponentTree {
+  components: IComponent[];
+  constructor() {
+    this.components = new Array();
+  }
+
+  addComponent(component: IComponent) {
+    this.components.push(component);
+  }
+
+  removeComponent(component: IComponent) {
+    // TODO
+  }
+}
+
+export interface IComponent {
   coordinate: Coordinate;
   size: Coordinate;
   background: string;
-  ctx: CanvasRenderingContext2D;
-  draw(): void;
+  draw(ctx: CanvasRenderingContext2D): void;
 }
 
 interface IGate extends IComponent {
@@ -19,13 +33,11 @@ export class AndGate implements IGate {
   coordinate: Coordinate;
   size: Coordinate;
   background: string;
-  ctx: CanvasRenderingContext2D;
 
-  constructor(coordinate: Coordinate, ctx: CanvasRenderingContext2D) {
+  constructor(coordinate: Coordinate) {
     this.coordinate = coordinate;
     this.size = new Coordinate(50, 50);
     this.background = "#878787";
-    this.ctx = ctx;
 
     /*
           this.outputs = Output[1];
@@ -38,17 +50,17 @@ export class AndGate implements IGate {
           */
   }
 
-  draw(): void {
-    this.ctx.fillStyle = "grey";
-    this.ctx.fillRect(
+  draw(ctx: CanvasRenderingContext2D): void {
+    ctx.fillStyle = "grey";
+    ctx.fillRect(
       this.coordinate.x,
       this.coordinate.y,
       this.size.x,
       this.size.x
     );
 
-    this.ctx.strokeStyle = "black";
-    this.ctx.strokeText("AND", this.coordinate.x + 1, this.coordinate.y + 10);
+    ctx.strokeStyle = "black";
+    ctx.strokeText("AND", this.coordinate.x + 1, this.coordinate.y + 10);
   }
 }
 
