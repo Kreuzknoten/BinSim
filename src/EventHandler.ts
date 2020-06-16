@@ -8,23 +8,42 @@ export class EventHandler {
     this.canvas = canvas;
 
     document.getElementById("canvas")!.addEventListener(
-      "click",
+      "mousedown",
       (event) => {
-        this.onCanvasClick(event);
+        this.onCanvasMouseDown(event);
+      },
+      false
+    );
+
+    document.getElementById("canvas")!.addEventListener(
+      "mouseup",
+      (event) => {
+        this.onCanvasMouseUp(event);
+      },
+      false
+    );
+
+    document.getElementById("canvas")!.addEventListener(
+      "scroll",
+      (event) => {
+        this.onCanvasScroll(event);
       },
       false
     );
   }
 
-  onCanvasClick(event: any): void {
-    let mousePosition = this.getCanvasMousePosition(event);
+  onCanvasMouseDown(event: any): void {
+    let buttonCode = event.button;
+    if (buttonCode == 0) {
+      console.log("down");
 
-    //let mousePosition = new Coordinate(10, 10);
-    console.log(mousePosition);
-    // ctx.fillRect(mousePosition.x, mousePosition.y, 1, 1);
+      let mousePosition = this.getCanvasMousePosition(event);
 
-    let gate = new AndGate(mousePosition, this.canvas.getContext("2d")!);
-    gate.draw();
+      console.log(mousePosition);
+
+      let gate = new AndGate(mousePosition, this.canvas.getContext("2d")!);
+      gate.draw();
+    }
   }
 
   getCanvasMousePosition(event: any): Coordinate {
@@ -34,5 +53,19 @@ export class EventHandler {
     let y = event.pageY - canvasBounds.top;
 
     return new Coordinate(x, y);
+  }
+
+  onCanvasMouseUp(event: any): void {
+    let buttonCode = event.button;
+    if (buttonCode == 0) {
+      console.log("up");
+    }
+  }
+
+  onCanvasScroll(event: any): void {
+    let buttonCode = event.button;
+    if (buttonCode == 0) {
+      console.log("Scroll");
+    }
   }
 }
