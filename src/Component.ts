@@ -21,6 +21,7 @@ export interface IComponent {
   size: Coordinate;
   background: string;
   draw(ctx: CanvasRenderingContext2D, grid: Grid): void;
+  isGridPositionWithingComponent(gridPosition: Coordinate): Boolean;
 }
 
 interface IGate extends IComponent {
@@ -49,6 +50,18 @@ export class AndGate implements IGate {
           this.inputs[0] = new Input;
           this.inputs[1] = new Input;
           */
+  }
+  isGridPositionWithingComponent(gridPosition: Coordinate): Boolean {
+    let isX1 = this.coordinate.x - 1 < gridPosition.x;
+    let isX2 = gridPosition.x < this.coordinate.x + this.size.x + 1;
+    let isY1 = this.coordinate.y - 1 < gridPosition.y;
+    let isY2 = gridPosition.y < this.coordinate.y + this.size.y + 1;
+
+    if (isX1 && isX2 && isY1 && isY2) {
+      return true;
+    }
+
+    return false;
   }
 
   draw(ctx: CanvasRenderingContext2D, grid: Grid): void {

@@ -5,7 +5,7 @@ export class Grid {
   gridSize: number;
 
   constructor() {
-    this.scale = 1; // unit is %
+    this.scale = 0.5; // unit is %
     this.gridSize = 20; //unit is px
     this.xTranslation = 0;
     this.yTranslation = 0;

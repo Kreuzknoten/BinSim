@@ -1,5 +1,5 @@
 import { Coordinate } from "./General";
-import { AndGate } from "./Component";
+import { AndGate, IComponent, ComponentTree } from "./Component";
 import { Renderer } from "./Renderer";
 
 export class EventHandler {
@@ -37,11 +37,17 @@ export class EventHandler {
 
   onCanvasMouseDown(event: any): void {
     let buttonCode = event.button;
+    let mouseCanvasPosition = this.getCanvasMousePosition(event);
+    let mouseGridPosition = this.getGridPositionFrom(mouseCanvasPosition);
+
     if (buttonCode == 0) {
-      let mousePosition = this.getCanvasMousePosition(event);
-      let gate = new AndGate(mousePosition);
-      this.renderer.componentTree.addComponent(gate);
-      this.renderer.draw();
+      if (this.getComponentsWithinGridCoordinate(mouseGridPosition) == null) {
+        let gate = new AndGate(mouseGridPosition);
+        this.renderer.componentTree.addComponent(gate);
+        this.renderer.draw();
+      } else {
+        console.log("hier ist bereits was");
+      }
     }
   }
 
@@ -52,17 +58,36 @@ export class EventHandler {
     let x = event.pageX - canvasBounds.left;
     let y = event.pageY - canvasBounds.top;
 
-    return this.getGridPosition(new Coordinate(x, y));
+    return new Coordinate(x, y);
   }
 
-  getGridPosition(canvasCoordinate: Coordinate): Coordinate {
+  getGridPositionFrom(canvasPosition: Coordinate): Coordinate {
     let grid = this.renderer.grid;
 
     // Grid coordinates
-    let x = Math.round(canvasCoordinate.x / (grid.gridSize * grid.scale));
-    let y = Math.round(canvasCoordinate.y / (grid.gridSize * grid.scale));
+    let x = Math.round(canvasPosition.x / (grid.gridSize * grid.scale));
+    let y = Math.round(canvasPosition.y / (grid.gridSize * grid.scale));
 
     return new Coordinate(x, y);
+  }
+
+  getComponentsWithinGridCoordinate(
+    gridCoordinate: Coordinate
+  ): IComponent[] | null {
+    let componentArray = this.renderer.componentTree.components;
+
+    let hitComponentArray = new Array<IComponent>();
+    componentArray.forEach((component) => {
+      if (component.isGridPositionWithingComponent(gridCoordinate)) {
+        hitComponentArray.push(component);
+      }
+    });
+
+    if (hitComponentArray.length == 0) {
+      return null;
+    } else {
+      return hitComponentArray;
+    }
   }
 
   onCanvasMouseUp(event: any): void {
