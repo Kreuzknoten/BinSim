@@ -1,4 +1,5 @@
 import { Coordinate } from "./General";
+import { Grid } from "./Grid";
 
 export class ComponentTree {
   components: IComponent[];
@@ -19,7 +20,7 @@ export interface IComponent {
   coordinate: Coordinate;
   size: Coordinate;
   background: string;
-  draw(ctx: CanvasRenderingContext2D): void;
+  draw(ctx: CanvasRenderingContext2D, grid: Grid): void;
 }
 
 interface IGate extends IComponent {
@@ -36,7 +37,7 @@ export class AndGate implements IGate {
 
   constructor(coordinate: Coordinate) {
     this.coordinate = coordinate;
-    this.size = new Coordinate(50, 50);
+    this.size = new Coordinate(3, 3);
     this.background = "#878787";
 
     /*
@@ -50,17 +51,21 @@ export class AndGate implements IGate {
           */
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
+  draw(ctx: CanvasRenderingContext2D, grid: Grid): void {
     ctx.fillStyle = "grey";
     ctx.fillRect(
-      this.coordinate.x,
-      this.coordinate.y,
-      this.size.x,
-      this.size.x
+      this.coordinate.x * grid.gridSize * grid.scale,
+      this.coordinate.y * grid.gridSize * grid.scale,
+      this.size.x * grid.gridSize * grid.scale,
+      this.size.x * grid.gridSize * grid.scale
     );
 
     ctx.strokeStyle = "black";
-    ctx.strokeText("AND", this.coordinate.x + 1, this.coordinate.y + 10);
+    ctx.strokeText(
+      "AND",
+      this.coordinate.x * grid.gridSize * grid.scale + 1,
+      this.coordinate.y * grid.gridSize * grid.scale + 10
+    );
   }
 }
 

@@ -48,8 +48,19 @@ export class EventHandler {
   getCanvasMousePosition(event: any): Coordinate {
     let canvasBounds = this.canvas.getBoundingClientRect();
 
+    // Canvas coordinates
     let x = event.pageX - canvasBounds.left;
     let y = event.pageY - canvasBounds.top;
+
+    return this.getGridPosition(new Coordinate(x, y));
+  }
+
+  getGridPosition(canvasCoordinate: Coordinate): Coordinate {
+    let grid = this.renderer.grid;
+
+    // Grid coordinates
+    let x = Math.round(canvasCoordinate.x / (grid.gridSize * grid.scale));
+    let y = Math.round(canvasCoordinate.y / (grid.gridSize * grid.scale));
 
     return new Coordinate(x, y);
   }
