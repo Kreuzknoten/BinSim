@@ -17,9 +17,10 @@ export class ComponentTree {
 }
 
 export interface IComponent {
-  coordinate: Coordinate;
+  gridPosition: Coordinate;
   size: Coordinate;
   background: string;
+  moveTo(newGridPosition: Coordinate): void;
   draw(ctx: CanvasRenderingContext2D, grid: Grid): void;
   isGridPositionWithingComponent(gridPosition: Coordinate): Boolean;
 }
@@ -32,12 +33,12 @@ interface IGate extends IComponent {
 export class AndGate implements IGate {
   inputs: Input[];
   outputs: Output[];
-  coordinate: Coordinate;
+  gridPosition: Coordinate;
   size: Coordinate;
   background: string;
 
   constructor(coordinate: Coordinate) {
-    this.coordinate = coordinate;
+    this.gridPosition = coordinate;
     this.size = new Coordinate(3, 3);
     this.background = "#878787";
 
@@ -51,11 +52,17 @@ export class AndGate implements IGate {
           this.inputs[1] = new Input;
           */
   }
+
+  moveTo(newGridPosition: Coordinate): void {
+    this.gridPosition.x = newGridPosition.x;
+    this.gridPosition.y = newGridPosition.y;
+  }
+
   isGridPositionWithingComponent(gridPosition: Coordinate): Boolean {
-    let isX1 = this.coordinate.x - 1 < gridPosition.x;
-    let isX2 = gridPosition.x < this.coordinate.x + this.size.x + 1;
-    let isY1 = this.coordinate.y - 1 < gridPosition.y;
-    let isY2 = gridPosition.y < this.coordinate.y + this.size.y + 1;
+    let isX1 = this.gridPosition.x - 1 < gridPosition.x;
+    let isX2 = gridPosition.x < this.gridPosition.x + this.size.x + 1;
+    let isY1 = this.gridPosition.y - 1 < gridPosition.y;
+    let isY2 = gridPosition.y < this.gridPosition.y + this.size.y + 1;
 
     if (isX1 && isX2 && isY1 && isY2) {
       return true;
@@ -67,8 +74,8 @@ export class AndGate implements IGate {
   draw(ctx: CanvasRenderingContext2D, grid: Grid): void {
     ctx.fillStyle = "grey";
     ctx.fillRect(
-      this.coordinate.x * grid.gridSize * grid.scale,
-      this.coordinate.y * grid.gridSize * grid.scale,
+      this.gridPosition.x * grid.gridSize * grid.scale,
+      this.gridPosition.y * grid.gridSize * grid.scale,
       this.size.x * grid.gridSize * grid.scale,
       this.size.x * grid.gridSize * grid.scale
     );
@@ -76,8 +83,8 @@ export class AndGate implements IGate {
     ctx.strokeStyle = "black";
     ctx.strokeText(
       "AND",
-      this.coordinate.x * grid.gridSize * grid.scale + 1,
-      this.coordinate.y * grid.gridSize * grid.scale + 10
+      this.gridPosition.x * grid.gridSize * grid.scale + 1,
+      this.gridPosition.y * grid.gridSize * grid.scale + 10
     );
   }
 }

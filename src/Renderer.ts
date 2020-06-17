@@ -14,6 +14,8 @@ export class Renderer {
   }
 
   draw() {
+    this.ctx.clearRect(0, 0, 300, 300);
+
     this.componentTree.components.forEach((component) => {
       component.draw(this.ctx, this.grid);
     });
