@@ -6,4 +6,16 @@ export class Coordinate {
     this.x = x;
     this.y = y;
   }
+
+  plus(newPosition: Coordinate): Coordinate {
+    let newX = this.x + newPosition.x;
+    let newY = this.y + newPosition.y;
+    return new Coordinate(newX, newY);
+  }
+
+  minus(newPosition: Coordinate): Coordinate {
+    let newX = this.x - newPosition.x;
+    let newY = this.y - newPosition.y;
+    return new Coordinate(newX, newY);
+  }
 }

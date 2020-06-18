@@ -15,7 +15,6 @@ export class Renderer {
 
   draw() {
     var ctx = this.canvas.getContext("2d")!;
-
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.componentTree.components.forEach((component) => {

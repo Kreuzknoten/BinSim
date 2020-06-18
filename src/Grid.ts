@@ -1,13 +1,17 @@
+import { Coordinate } from "./General";
+
 export class Grid {
   scale: number;
-  xTranslation: number;
-  yTranslation: number;
+  translation: Coordinate;
   gridSize: number;
 
   constructor() {
     this.scale = 0.5; // unit is %
     this.gridSize = 20; //unit is px
-    this.xTranslation = 0;
-    this.yTranslation = 0;
+    this.translation = new Coordinate(0, 0);
+  }
+
+  translateBy(newGridCoordinate: Coordinate): void {
+    this.translation = this.translation.plus(newGridCoordinate);
   }
 }

@@ -8,6 +8,7 @@ export class EventHandler {
 
   lastLeftMouseDownEventInfo: EventInfo;
   lastRightMouseDownEventInfo: EventInfo;
+  lastMouseMoveEventInfo: EventInfo;
   isDraggingComponent: boolean;
   isDraggingGrid: boolean;
 
@@ -15,6 +16,8 @@ export class EventHandler {
     this.canvas = canvas;
     this.renderer = renderer;
     this.lastLeftMouseDownEventInfo = new EventInfo();
+    this.lastRightMouseDownEventInfo = new EventInfo();
+    this.lastMouseMoveEventInfo = new EventInfo();
     this.isDraggingComponent = false;
     this.isDraggingGrid = false;
 
@@ -104,7 +107,6 @@ export class EventHandler {
         if (hitComponent == null) {
           let gate = new AndGate(mouseGridPosition);
           this.renderer.componentTree.addComponent(gate);
-          this.renderer.draw();
         } else {
           this.isDraggingComponent = true;
         }
@@ -115,6 +117,8 @@ export class EventHandler {
     if (buttonCode == 2) {
       this.lastRightMouseDownEventInfo.setEvent(event, hitComponent);
     }
+
+    this.renderer.draw();
   }
 
   onCanvasMouseUp(event: MouseEvent): void {
@@ -129,6 +133,8 @@ export class EventHandler {
     // Right Mouse Button
     if (buttonCode == 2) {
     }
+
+    this.renderer.draw();
   }
 
   onCanvasMove(event: MouseEvent) {
@@ -139,6 +145,21 @@ export class EventHandler {
       let componentOfLastEvent = this.lastLeftMouseDownEventInfo.hitComponent;
       componentOfLastEvent?.moveTo(mouseGridPosition);
     }
+
+    if (this.isDraggingGrid) {
+      let mouseCanvasPosition = this.getCanvasMousePosition(event);
+      let mouseGridPosition = this.getGridPositionFrom(mouseCanvasPosition);
+
+      if (this.lastMouseMoveEventInfo.event instanceof MouseEvent) {
+        let initialMouseCanvasPosition = this.getCanvasMousePosition(this.lastMouseMoveEventInfo.event);
+        let initialMouseGridPosition = this.getGridPositionFrom(initialMouseCanvasPosition);
+
+        let diffMouseGridPosition = mouseGridPosition.minus(initialMouseGridPosition);
+        this.renderer.grid.translateBy(diffMouseGridPosition);
+      }
+    }
+
+    this.lastMouseMoveEventInfo.setEvent(event, null);
 
     this.renderer.draw();
   }

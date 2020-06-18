@@ -74,18 +74,19 @@ export class AndGate implements IGate {
   draw(ctx: CanvasRenderingContext2D, grid: Grid): void {
     ctx.fillStyle = "grey";
     ctx.fillRect(
-      this.gridPosition.x * grid.gridSize * grid.scale,
-      this.gridPosition.y * grid.gridSize * grid.scale,
+      (this.gridPosition.x + grid.translation.x) * grid.gridSize * grid.scale,
+      (this.gridPosition.y + grid.translation.y) * grid.gridSize * grid.scale,
       this.size.x * grid.gridSize * grid.scale,
       this.size.x * grid.gridSize * grid.scale
     );
-
+    /*
     ctx.strokeStyle = "black";
     ctx.strokeText(
       "AND",
       this.gridPosition.x * grid.gridSize * grid.scale + 1,
       this.gridPosition.y * grid.gridSize * grid.scale + 10
     );
+    */
   }
 }
 
