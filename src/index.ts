@@ -11,5 +11,5 @@ canvas.width = 300;
 canvas.height = 300;
 
 let componentTree = new ComponentTree();
-let renderer = new Renderer(ctx, componentTree);
+let renderer = new Renderer(canvas, componentTree);
 let eventHandler = new EventHandler(canvas, renderer);

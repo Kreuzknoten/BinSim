@@ -2,22 +2,24 @@ import { IComponent, ComponentTree } from "./Component";
 import { Grid } from "./Grid";
 
 export class Renderer {
-  ctx: CanvasRenderingContext2D;
+  canvas: HTMLCanvasElement;
   componentTree: ComponentTree;
   grid: Grid;
 
-  constructor(ctx: CanvasRenderingContext2D, componentTree: ComponentTree) {
-    this.ctx = ctx;
+  constructor(canvas: HTMLCanvasElement, componentTree: ComponentTree) {
+    this.canvas = canvas;
     this.componentTree = componentTree;
     this.grid = new Grid();
     this.draw();
   }
 
   draw() {
-    this.ctx.clearRect(0, 0, 300, 300);
+    var ctx = this.canvas.getContext("2d")!;
+
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.componentTree.components.forEach((component) => {
-      component.draw(this.ctx, this.grid);
+      component.draw(ctx, this.grid);
     });
   }
 }
