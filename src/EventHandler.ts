@@ -5,12 +5,18 @@ import { Renderer } from "./Renderer";
 export class EventHandler {
   canvas: HTMLCanvasElement;
   renderer: Renderer;
-  eventHistory: EventInfo[]; //Only Keys + Mouse Up/Down intended
+
+  lastLeftMouseDownEventInfo: EventInfo;
+  lastRightMouseDownEventInfo: EventInfo;
+  isDraggingComponent: boolean;
+  isDraggingGrid: boolean;
 
   constructor(canvas: HTMLCanvasElement, renderer: Renderer) {
     this.canvas = canvas;
     this.renderer = renderer;
-    this.eventHistory = new Array<EventInfo>();
+    this.lastLeftMouseDownEventInfo = new EventInfo();
+    this.isDraggingComponent = false;
+    this.isDraggingGrid = false;
 
     document.getElementById("canvas")!.addEventListener(
       "mousedown",
@@ -64,9 +70,7 @@ export class EventHandler {
     return new Coordinate(x, y);
   }
 
-  getComponentsWithinGridCoordinate(
-    gridCoordinate: Coordinate
-  ): IComponent | null {
+  getComponentsWithinGridCoordinate(gridCoordinate: Coordinate): IComponent | null {
     let componentArray = this.renderer.componentTree.components;
 
     let hitComponentArray = new Array<IComponent>();
@@ -90,47 +94,50 @@ export class EventHandler {
     let hitComponent: IComponent | null;
     hitComponent = this.getComponentsWithinGridCoordinate(mouseGridPosition);
 
+    // Left Mouse Button
     if (buttonCode == 0) {
-      // Left Mouse Button
-      if (hitComponent == null) {
-        let gate = new AndGate(mouseGridPosition);
-        this.renderer.componentTree.addComponent(gate);
-        this.renderer.draw();
+      this.lastLeftMouseDownEventInfo.setEvent(event, hitComponent);
+
+      if (event.ctrlKey) {
+        this.isDraggingGrid = true;
       } else {
-        //
+        if (hitComponent == null) {
+          let gate = new AndGate(mouseGridPosition);
+          this.renderer.componentTree.addComponent(gate);
+          this.renderer.draw();
+        } else {
+          this.isDraggingComponent = true;
+        }
       }
     }
 
-    let eventInfo = new EventInfo();
-    eventInfo.addEvent(event, hitComponent);
-    this.eventHistory.push(eventInfo);
+    // Right Mouse Button
+    if (buttonCode == 2) {
+      this.lastRightMouseDownEventInfo.setEvent(event, hitComponent);
+    }
   }
 
   onCanvasMouseUp(event: MouseEvent): void {
     let buttonCode = event.button;
 
+    // Left Mouse Button
     if (buttonCode == 0) {
+      this.isDraggingComponent = false;
+      this.isDraggingGrid = false;
     }
 
-    let eventInfo = new EventInfo();
-    eventInfo.addEvent(event, null);
-    this.eventHistory.push(eventInfo);
+    // Right Mouse Button
+    if (buttonCode == 2) {
+    }
   }
 
   onCanvasMove(event: MouseEvent) {
-    let mouseCanvasPosition = this.getCanvasMousePosition(event);
-    let mouseGridPosition = this.getGridPositionFrom(mouseCanvasPosition);
-    let thereIsEventHistory = this.eventHistory.length > 0;
+    if (this.isDraggingComponent) {
+      let mouseCanvasPosition = this.getCanvasMousePosition(event);
+      let mouseGridPosition = this.getGridPositionFrom(mouseCanvasPosition);
 
-    if (thereIsEventHistory) {
-      let lastEvent = this.eventHistory[this.eventHistory.length - 1];
-      let lastEventIsHitAndDown =
-        lastEvent.hitComponent && lastEvent.event.type == "mousedown";
-
-      if (lastEventIsHitAndDown) {
-        let componentOfLastEvent = lastEvent.hitComponent;
-        componentOfLastEvent?.moveTo(mouseGridPosition);
-      }
+      let componentOfLastEvent = this.lastLeftMouseDownEventInfo.hitComponent;
+      componentOfLastEvent?.moveTo(mouseGridPosition);
     }
 
     this.renderer.draw();
@@ -148,13 +155,8 @@ class EventInfo {
   event: UIEvent;
   hitComponent: IComponent | null;
 
-  addEvent(event: UIEvent, hitComponent: IComponent | null): boolean {
-    if (event.type == "mouseup" || event.type == "mousedown") {
-      this.event = event;
-      this.hitComponent = hitComponent;
-      return true;
-    } else {
-      return false;
-    }
+  setEvent(event: UIEvent, hitComponent: IComponent | null): void {
+    this.event = event;
+    this.hitComponent = hitComponent;
   }
 }
