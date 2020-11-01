@@ -59,9 +59,9 @@ export class AndGate implements IGate {
   }
 
   isGridPositionWithingComponent(grid: Grid, gridPosition: Coordinate): Boolean {
-    let isX1 = grid.translation.x + this.gridPosition.x - 1 < gridPosition.x;
+    let isX1 = this.gridPosition.x - 1 < gridPosition.x;
     let isX2 = gridPosition.x < this.gridPosition.x + this.size.x + 1;
-    let isY1 = grid.translation.y + this.gridPosition.y - 1 < gridPosition.y;
+    let isY1 = this.gridPosition.y - 1 < gridPosition.y;
     let isY2 = gridPosition.y < this.gridPosition.y + this.size.y + 1;
 
     if (isX1 && isX2 && isY1 && isY2) {

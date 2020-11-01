@@ -96,7 +96,6 @@ export class EventHandler {
     let mouseGridPosition = this.getGridPositionFrom(mouseCanvasPosition);
     let hitComponent: IComponent | null;
 
-    // hier läufts iwo schief!!!!!!!!!!!!!! <-----------------------------
     hitComponent = this.getComponentsWithinGridCoordinate(mouseGridPosition);
 
     // Left Mouse Button
