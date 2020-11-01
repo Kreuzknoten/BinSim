@@ -22,7 +22,7 @@ export interface IComponent {
   background: string;
   moveTo(newGridPosition: Coordinate): void;
   draw(ctx: CanvasRenderingContext2D, grid: Grid): void;
-  isGridPositionWithingComponent(gridPosition: Coordinate): Boolean;
+  isGridPositionWithingComponent(grid: Grid, gridPosition: Coordinate): Boolean;
 }
 
 interface IGate extends IComponent {
@@ -58,10 +58,10 @@ export class AndGate implements IGate {
     this.gridPosition.y = newGridPosition.y;
   }
 
-  isGridPositionWithingComponent(gridPosition: Coordinate): Boolean {
-    let isX1 = this.gridPosition.x - 1 < gridPosition.x;
+  isGridPositionWithingComponent(grid: Grid, gridPosition: Coordinate): Boolean {
+    let isX1 = grid.translation.x + this.gridPosition.x - 1 < gridPosition.x;
     let isX2 = gridPosition.x < this.gridPosition.x + this.size.x + 1;
-    let isY1 = this.gridPosition.y - 1 < gridPosition.y;
+    let isY1 = grid.translation.y + this.gridPosition.y - 1 < gridPosition.y;
     let isY2 = gridPosition.y < this.gridPosition.y + this.size.y + 1;
 
     if (isX1 && isX2 && isY1 && isY2) {

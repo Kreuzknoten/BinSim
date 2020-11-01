@@ -67,8 +67,8 @@ export class EventHandler {
     let grid = this.renderer.grid;
 
     // Grid coordinates
-    let x = Math.round(canvasPosition.x / (grid.gridSize * grid.scale));
-    let y = Math.round(canvasPosition.y / (grid.gridSize * grid.scale));
+    let x = Math.round(canvasPosition.x / (grid.gridSize * grid.scale)) - grid.translation.x;
+    let y = Math.round(canvasPosition.y / (grid.gridSize * grid.scale)) - grid.translation.y;
 
     return new Coordinate(x, y);
   }
@@ -78,7 +78,7 @@ export class EventHandler {
 
     let hitComponentArray = new Array<IComponent>();
     componentArray.forEach((component) => {
-      if (component.isGridPositionWithingComponent(gridCoordinate)) {
+      if (component.isGridPositionWithingComponent(this.renderer.grid, gridCoordinate)) {
         hitComponentArray.push(component);
       }
     });
@@ -95,6 +95,8 @@ export class EventHandler {
     let mouseCanvasPosition = this.getCanvasMousePosition(event);
     let mouseGridPosition = this.getGridPositionFrom(mouseCanvasPosition);
     let hitComponent: IComponent | null;
+
+    // hier läufts iwo schief!!!!!!!!!!!!!! <-----------------------------
     hitComponent = this.getComponentsWithinGridCoordinate(mouseGridPosition);
 
     // Left Mouse Button
@@ -107,8 +109,10 @@ export class EventHandler {
         if (hitComponent == null) {
           let gate = new AndGate(mouseGridPosition);
           this.renderer.componentTree.addComponent(gate);
+          console.log("hit nothing!");
         } else {
           this.isDraggingComponent = true;
+          console.log("now dragging");
         }
       }
     }
@@ -118,7 +122,7 @@ export class EventHandler {
       this.lastRightMouseDownEventInfo.setEvent(event, hitComponent);
     }
 
-    this.renderer.draw();
+    this.drawCall();
   }
 
   onCanvasMouseUp(event: MouseEvent): void {
@@ -128,13 +132,14 @@ export class EventHandler {
     if (buttonCode == 0) {
       this.isDraggingComponent = false;
       this.isDraggingGrid = false;
+      console.log("stop dragging");
     }
 
     // Right Mouse Button
     if (buttonCode == 2) {
     }
 
-    this.renderer.draw();
+    this.drawCall();
   }
 
   onCanvasMove(event: MouseEvent) {
@@ -161,7 +166,7 @@ export class EventHandler {
 
     this.lastMouseMoveEventInfo.setEvent(event, null);
 
-    this.renderer.draw();
+    this.drawCall();
   }
 
   onCanvasScroll(event: MouseEvent): void {
@@ -169,6 +174,13 @@ export class EventHandler {
     if (buttonCode == 0) {
       console.log("Scroll");
     }
+  }
+
+  drawCall(): void {
+    console.log("isDraggingComponent: " + this.isDraggingComponent);
+    console.log("isDraggingGrid: " + this.isDraggingGrid);
+    console.log("Number Of Gates: " + this.renderer.componentTree.components.length);
+    this.renderer.draw();
   }
 }
 
