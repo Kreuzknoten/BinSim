@@ -18,4 +18,15 @@ export class Coordinate {
     let newY = this.y - newPosition.y;
     return new Coordinate(newX, newY);
   }
+
+  inverse(): Coordinate {
+    let newX = this.x * -1;
+    let newY = this.y * -1;
+    return new Coordinate(newX, newY);
+  }
+
+  toString(): string {
+    let text: string = "x = " + this.x + " y = " + this.y;
+    return text;
+  }
 }

@@ -1,4 +1,24 @@
 #canvas {
-    border:1px solid #000000;
-    
+  border: 1px solid black;
+  display: inline;
+}
+
+.tool {
+  width: 20px;
+  height: 20px;
+  border: 1px solid black;
+}
+
+#horizontalBar .tool {
+  background-color: blue;
+  display: inline-block;
+}
+
+#verticalBar .tool {
+  background-color: cornflowerblue;
+}
+
+#infoBar .tool {
+  background-color: darkcyan;
+  display: inline-block;
 }
