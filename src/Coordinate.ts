@@ -30,3 +30,7 @@ export class Coordinate {
     return text;
   }
 }
+
+export class GridCoordinate extends Coordinate {}
+
+export class CanvasCoordinate extends Coordinate {}

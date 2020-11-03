@@ -1,4 +1,4 @@
-import { Coordinate } from "./General";
+import { Coordinate } from "./Coordinate";
 import { Grid } from "./Grid";
 
 export class ComponentTree {
@@ -74,10 +74,10 @@ export class AndGate implements IGate {
   draw(ctx: CanvasRenderingContext2D, grid: Grid): void {
     ctx.fillStyle = "grey";
     ctx.fillRect(
-      (this.gridPosition.x + grid.translation.x) * grid.gridSize * grid.scale,
-      (this.gridPosition.y + grid.translation.y) * grid.gridSize * grid.scale,
-      this.size.x * grid.gridSize * grid.scale,
-      this.size.x * grid.gridSize * grid.scale
+      (this.gridPosition.x + grid.gridTranslation.x) * grid.gridBlockSize * grid.scaleFactor,
+      (this.gridPosition.y + grid.gridTranslation.y) * grid.gridBlockSize * grid.scaleFactor,
+      this.size.x * grid.gridBlockSize * grid.scaleFactor,
+      this.size.x * grid.gridBlockSize * grid.scaleFactor
     );
     /*
     ctx.strokeStyle = "black";
