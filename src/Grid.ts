@@ -1,48 +1,49 @@
-import { Coordinate } from "./General";
+import { Coordinate } from "./Coordinate";
+import { GridCoordinate } from "./Coordinate";
+import { CanvasCoordinate } from "./Coordinate";
 
 export class Grid {
-  scale: number;
-  translation: Coordinate;
-  gridSize: number;
+  scaleFactor: number;
+  gridTranslation: GridCoordinate;
+  gridBlockSize: number; //unit is px
 
   constructor() {
-    this.scale = 1; // scale factor
-    this.gridSize = 10; //unit is px
-    this.translation = new Coordinate(0, 0);
+    this.scaleFactor = 1;
+    this.gridBlockSize = 10;
+    this.gridTranslation = new Coordinate(0, 0);
   }
 
-  translateBy(newGridCoordinate: Coordinate): void {
-    this.translation = this.translation.plus(newGridCoordinate);
+  zoomBy(factor: number): void {
+    this.scaleFactor = this.scaleFactor * factor;
   }
 
-  // Center = GridCoordinate
-  zoomBy(amount: number): void {
-    this.scale = this.scale * amount;
-    console.log(this.scale);
+  translateByGridCoordinate(newGridCoordinate: GridCoordinate): void {
+    this.gridTranslation = this.gridTranslation.plus(newGridCoordinate);
   }
 
-  getCanvasCoordinateFromGridCoordinate(gridcoordinate: Coordinate): Coordinate {
-    let canvasCoordinateX: number = Math.round((gridcoordinate.x + this.translation.x) * this.gridSize * this.scale);
-    let canvasCoordinateY: number = Math.round((gridcoordinate.y + this.translation.y) * this.gridSize * this.scale);
-    return new Coordinate(canvasCoordinateX, canvasCoordinateY);
-  }
-
-  getGridCoordinateFromCanvasCoordinate(canvasCoordinate: Coordinate): Coordinate {
-    let gridCoordinateX: number = Math.round(canvasCoordinate.x / this.gridSize / this.scale + this.translation.x);
-    let gridCoordinateY: number = Math.round(canvasCoordinate.y / this.gridSize / this.scale + this.translation.y);
-    return new Coordinate(gridCoordinateX, gridCoordinateY);
-  }
-
-  translateByPx(canvasCoordinate: Coordinate): void {
+  translateByCanvasCoordinate(canvasCoordinate: CanvasCoordinate): void {
     let gridTranslation: Coordinate = this.getGridCoordinateFromCanvasCoordinate(canvasCoordinate);
-    this.translateBy(gridTranslation);
-
-    // let gridTranslationX: number = canvasCoordinate.x / (this.gridSize * this.scale);
-    // let gridTranslationY: number = canvasCoordinate.y / (this.gridSize * this.scale);
-
-    // let gridTranslationCoordinate: Coordinate = new Coordinate(gridTranslationX, gridTranslationY);
-    // this.translateBy(gridTranslationCoordinate);
+    this.translateByGridCoordinate(gridTranslation);
 
     console.log("translateByCanvasPosition" + this.getCanvasCoordinateFromGridCoordinate(gridTranslation).toString());
+  }
+
+  getCanvasCoordinateFromGridCoordinate(gridcoordinate: GridCoordinate): CanvasCoordinate {
+    let x: number = Math.round((gridcoordinate.x - this.gridTranslation.x) * this.gridBlockSize * this.scaleFactor);
+    let y: number = Math.round((gridcoordinate.y - this.gridTranslation.y) * this.gridBlockSize * this.scaleFactor);
+    return new CanvasCoordinate(x, y);
+  }
+
+  getGridCoordinateFromCanvasCoordinate(canvasCoordinate: CanvasCoordinate): GridCoordinate {
+    let x: number = Math.round(canvasCoordinate.x / this.gridBlockSize / this.scaleFactor - this.gridTranslation.x);
+    let y: number = Math.round(canvasCoordinate.y / this.gridBlockSize / this.scaleFactor - this.gridTranslation.y);
+    return new GridCoordinate(x, y);
+  }
+
+  getGridCoordinateRelativeToOriginFromCanvasCoordinate(canvasCoordinate: CanvasCoordinate): GridCoordinate {
+    let x: number = Math.round(canvasCoordinate.x / (this.gridBlockSize * this.scaleFactor));
+    let y: number = Math.round(canvasCoordinate.y / (this.gridBlockSize * this.scaleFactor));
+
+    return new GridCoordinate(x, y);
   }
 }
