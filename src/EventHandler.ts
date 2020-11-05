@@ -42,7 +42,7 @@ export class EventHandler {
     document.getElementById("canvas")!.addEventListener(
       "mousemove",
       (event) => {
-        this.onCanvasMove(event);
+        this.onCanvasMouseMove(event);
       },
       false
     );
@@ -84,21 +84,37 @@ export class EventHandler {
 
   onCanvasMouseDown(event: MouseEvent): void {
     let buttonCode = event.button;
-    let mouseCanvasCoordinate = this.getMouseCanvasCoordinateRelativeToOrigin(event);
-    let mouseGridCoordinate = this.renderer.grid.getGridCoordinateFromCanvasCoordinate(mouseCanvasCoordinate);
-    let hitComponent: IComponent | null;
 
-    hitComponent = this.getComponentsWithinGridCoordinate(mouseGridCoordinate);
+    let mouseCanvasCoordinateRelativeToOrigin = this.getMouseCanvasCoordinateRelativeToOrigin(event);
+    let mouseGridCoordinateRelativeToOrigin = this.renderer.grid.getGridCoordinateRelativeToOriginFromCanvasCoordinate(
+      mouseCanvasCoordinateRelativeToOrigin
+    );
+
+    let mouseCanvasCoordinate = mouseCanvasCoordinateRelativeToOrigin.plus(this.renderer.grid.canvasTranslation);
+    let mouseGridCoordinate = this.renderer.grid.getGridCoordinateFromCanvasCoordinate(mouseCanvasCoordinate);
+
+    let hitComponent = this.getComponentsWithinGridCoordinate(mouseGridCoordinate);
 
     // Left Mouse Button
     if (buttonCode == 0) {
       this.lastLeftMouseDownEventInfo.setEvent(event, hitComponent);
+
+      console.log("down");
+      console.log("mouseCanvasCoordinateRelativeToOrigin " + mouseCanvasCoordinateRelativeToOrigin);
+      console.log("mouseCanvasCoordinate " + mouseCanvasCoordinate);
+      console.log("mouseGridCoordinateRelativeToOrigin " + mouseGridCoordinateRelativeToOrigin);
+
+      console.log("mouseGridCoordinate " + mouseGridCoordinate);
+      console.log(this.renderer.grid.toString());
 
       if (event.ctrlKey) {
         this.isDraggingGrid = true;
       } else {
         if (hitComponent == null) {
           let gate = new AndGate(mouseGridCoordinate);
+
+          //let gate = new AndGate(new GridCoordinate(5, 5));
+
           this.renderer.componentTree.addComponent(gate);
         } else {
           this.isDraggingComponent = true;
@@ -121,6 +137,9 @@ export class EventHandler {
     if (buttonCode == 0) {
       this.isDraggingComponent = false;
       this.isDraggingGrid = false;
+
+      console.log(this.renderer.grid.toString());
+      console.log("up");
     }
 
     // Right Mouse Button
@@ -130,9 +149,14 @@ export class EventHandler {
     this.drawCall();
   }
 
-  onCanvasMove(event: MouseEvent) {
+  //Scheint korrekt zu sein ------>
+
+  onCanvasMouseMove(event: MouseEvent) {
     if (this.isDraggingComponent) {
-      let mouseCanvasCoordinate = this.getMouseCanvasCoordinateRelativeToOrigin(event);
+      let mouseCanvasCoordinateRelativeToOrigin = this.getMouseCanvasCoordinateRelativeToOrigin(event);
+      // let mouseGridCoordinateRelativeToOrigin = this.renderer.grid.getGridCoordinateFromCanvasCoordinate(mouseCanvasCoordinateRelativeToOrigin);
+
+      let mouseCanvasCoordinate = mouseCanvasCoordinateRelativeToOrigin.plus(this.renderer.grid.canvasTranslation);
       let mouseGridCoordinate = this.renderer.grid.getGridCoordinateFromCanvasCoordinate(mouseCanvasCoordinate);
 
       let componentOfLastEvent = this.lastLeftMouseDownEventInfo.hitComponent;
@@ -140,15 +164,13 @@ export class EventHandler {
     }
 
     if (this.isDraggingGrid) {
-      let mouseCanvasCoordinate = this.getMouseCanvasCoordinateRelativeToOrigin(event);
-      let mouseGridCoordinate = this.renderer.grid.getGridCoordinateFromCanvasCoordinate(mouseCanvasCoordinate);
+      let mouseCanvasCoordinateRelativeToOrigin = this.getMouseCanvasCoordinateRelativeToOrigin(event);
+      //let mouseCanvasCoordinate = mouseCanvasCoordinateRelativeToOrigin.plus(this.renderer.grid.canvasTranslation);
 
       if (this.lastMouseMoveEventInfo.event instanceof MouseEvent) {
-        let initialMouseCanvasCoordinate = this.getMouseCanvasCoordinateRelativeToOrigin(this.lastMouseMoveEventInfo.event);
-        let initialMouseGridCoordinate = this.renderer.grid.getGridCoordinateFromCanvasCoordinate(initialMouseCanvasCoordinate);
-
-        let MouseGridCoordinateDelta = mouseGridCoordinate.minus(initialMouseGridCoordinate);
-        this.renderer.grid.translateByGridCoordinate(MouseGridCoordinateDelta);
+        let initialMouseCanvasCoordinateRelativeToOrigin = this.getMouseCanvasCoordinateRelativeToOrigin(this.lastMouseMoveEventInfo.event);
+        let MouseCanvasCoordinateDelta = mouseCanvasCoordinateRelativeToOrigin.minus(initialMouseCanvasCoordinateRelativeToOrigin);
+        this.renderer.grid.translateByCanvasCoordinate(MouseCanvasCoordinateDelta);
       }
     }
 
@@ -157,6 +179,7 @@ export class EventHandler {
     this.drawCall();
   }
 
+  // Bestimmt funzt hier nixxx
   onCanvasScroll(event: WheelEvent): void {
     let currentGridScale: number = this.renderer.grid.scaleFactor;
     let zoomStep: number = 0;
@@ -189,9 +212,9 @@ export class EventHandler {
   }
 
   drawCall(): void {
-    console.log("isDraggingComponent: " + this.isDraggingComponent);
-    console.log("isDraggingGrid: " + this.isDraggingGrid);
-    console.log("Number Of Gates: " + this.renderer.componentTree.components.length);
+    // console.log("isDraggingComponent: " + this.isDraggingComponent);
+    // console.log("isDraggingGrid: " + this.isDraggingGrid);
+    // console.log("Number Of Gates: " + this.renderer.componentTree.components.length);
     this.renderer.draw();
   }
 }

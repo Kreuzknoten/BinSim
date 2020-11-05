@@ -74,8 +74,8 @@ export class AndGate implements IGate {
   draw(ctx: CanvasRenderingContext2D, grid: Grid): void {
     ctx.fillStyle = "grey";
     ctx.fillRect(
-      (this.gridPosition.x + grid.gridTranslation.x) * grid.gridBlockSize * grid.scaleFactor,
-      (this.gridPosition.y + grid.gridTranslation.y) * grid.gridBlockSize * grid.scaleFactor,
+      this.gridPosition.x * grid.gridBlockSize * grid.scaleFactor + grid.canvasTranslation.x, // Funktion auch in grid klasse
+      this.gridPosition.y * grid.gridBlockSize * grid.scaleFactor + grid.canvasTranslation.y,
       this.size.x * grid.gridBlockSize * grid.scaleFactor,
       this.size.x * grid.gridBlockSize * grid.scaleFactor
     );
