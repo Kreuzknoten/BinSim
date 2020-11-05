@@ -1,4 +1,3 @@
-import { Coordinate } from "./Coordinate";
 import { GridCoordinate } from "./Coordinate";
 import { CanvasCoordinate } from "./Coordinate";
 
@@ -10,7 +9,7 @@ export class Grid {
   constructor() {
     this.scaleFactor = 1;
     this.gridBlockSize = 10;
-    this.canvasTranslation = new Coordinate(0, 0);
+    this.canvasTranslation = new CanvasCoordinate(0, 0);
   }
 
   zoomBy(factor: number): void {

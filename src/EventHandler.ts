@@ -1,4 +1,3 @@
-import { Coordinate } from "./Coordinate";
 import { GridCoordinate } from "./Coordinate";
 import { CanvasCoordinate } from "./Coordinate";
 import { AndGate, IComponent, ComponentTree } from "./Component";
@@ -82,43 +81,35 @@ export class EventHandler {
     }
   }
 
+  getMouseGridCoordinate(event: MouseEvent): GridCoordinate {
+    let mouseCanvasCoordinateRelativeToOrigin: CanvasCoordinate = this.getMouseCanvasCoordinateRelativeToOrigin(event);
+    return this.renderer.grid.getGridCoordinateFromCanvasCoordinate(mouseCanvasCoordinateRelativeToOrigin);
+  }
+
+  getMouseCanvasCoordinate(event: MouseEvent): CanvasCoordinate {
+    return this.getMouseCanvasCoordinateRelativeToOrigin(event).plus(this.renderer.grid.canvasTranslation);
+  }
+
   onCanvasMouseDown(event: MouseEvent): void {
     let buttonCode = event.button;
 
-    let mouseCanvasCoordinateRelativeToOrigin = this.getMouseCanvasCoordinateRelativeToOrigin(event);
-    let mouseGridCoordinateRelativeToOrigin = this.renderer.grid.getGridCoordinateRelativeToOriginFromCanvasCoordinate(
-      mouseCanvasCoordinateRelativeToOrigin
-    );
-
-    let mouseCanvasCoordinate = mouseCanvasCoordinateRelativeToOrigin.plus(this.renderer.grid.canvasTranslation);
-    let mouseGridCoordinate = this.renderer.grid.getGridCoordinateFromCanvasCoordinate(mouseCanvasCoordinate);
+    let mouseGridCoordinate: GridCoordinate = this.getMouseGridCoordinate(event);
 
     let hitComponent = this.getComponentsWithinGridCoordinate(mouseGridCoordinate);
 
     // Left Mouse Button
     if (buttonCode == 0) {
       this.lastLeftMouseDownEventInfo.setEvent(event, hitComponent);
+    }
 
-      console.log("down");
-      console.log("mouseCanvasCoordinateRelativeToOrigin " + mouseCanvasCoordinateRelativeToOrigin);
-      console.log("mouseCanvasCoordinate " + mouseCanvasCoordinate);
-      console.log("mouseGridCoordinateRelativeToOrigin " + mouseGridCoordinateRelativeToOrigin);
-
-      console.log("mouseGridCoordinate " + mouseGridCoordinate);
-      console.log(this.renderer.grid.toString());
-
-      if (event.ctrlKey) {
-        this.isDraggingGrid = true;
+    if (event.ctrlKey) {
+      this.isDraggingGrid = true;
+    } else {
+      if (hitComponent == null) {
+        let gate = new AndGate(mouseGridCoordinate);
+        this.renderer.componentTree.addComponent(gate);
       } else {
-        if (hitComponent == null) {
-          let gate = new AndGate(mouseGridCoordinate);
-
-          //let gate = new AndGate(new GridCoordinate(5, 5));
-
-          this.renderer.componentTree.addComponent(gate);
-        } else {
-          this.isDraggingComponent = true;
-        }
+        this.isDraggingComponent = true;
       }
     }
 
@@ -137,9 +128,6 @@ export class EventHandler {
     if (buttonCode == 0) {
       this.isDraggingComponent = false;
       this.isDraggingGrid = false;
-
-      console.log(this.renderer.grid.toString());
-      console.log("up");
     }
 
     // Right Mouse Button
@@ -149,34 +137,31 @@ export class EventHandler {
     this.drawCall();
   }
 
-  //Scheint korrekt zu sein ------>
-
   onCanvasMouseMove(event: MouseEvent) {
-    if (this.isDraggingComponent) {
-      let mouseCanvasCoordinateRelativeToOrigin = this.getMouseCanvasCoordinateRelativeToOrigin(event);
-      // let mouseGridCoordinateRelativeToOrigin = this.renderer.grid.getGridCoordinateFromCanvasCoordinate(mouseCanvasCoordinateRelativeToOrigin);
+    let grid = this.renderer.grid;
 
-      let mouseCanvasCoordinate = mouseCanvasCoordinateRelativeToOrigin.plus(this.renderer.grid.canvasTranslation);
-      let mouseGridCoordinate = this.renderer.grid.getGridCoordinateFromCanvasCoordinate(mouseCanvasCoordinate);
-
-      let componentOfLastEvent = this.lastLeftMouseDownEventInfo.hitComponent;
-      componentOfLastEvent?.moveTo(mouseGridCoordinate);
-    }
-
-    if (this.isDraggingGrid) {
-      let mouseCanvasCoordinateRelativeToOrigin = this.getMouseCanvasCoordinateRelativeToOrigin(event);
-      //let mouseCanvasCoordinate = mouseCanvasCoordinateRelativeToOrigin.plus(this.renderer.grid.canvasTranslation);
-
-      if (this.lastMouseMoveEventInfo.event instanceof MouseEvent) {
-        let initialMouseCanvasCoordinateRelativeToOrigin = this.getMouseCanvasCoordinateRelativeToOrigin(this.lastMouseMoveEventInfo.event);
-        let MouseCanvasCoordinateDelta = mouseCanvasCoordinateRelativeToOrigin.minus(initialMouseCanvasCoordinateRelativeToOrigin);
-        this.renderer.grid.translateByCanvasCoordinate(MouseCanvasCoordinateDelta);
+    if (this.isDraggingComponent || this.isDraggingGrid) {
+      if (this.isDraggingComponent) {
+        let mouseGridCoordinate: GridCoordinate = this.getMouseGridCoordinate(event);
+        let componentOfLastEvent = this.lastLeftMouseDownEventInfo.hitComponent;
+        componentOfLastEvent?.moveTo(mouseGridCoordinate);
       }
+
+      if (this.isDraggingGrid) {
+        if (this.lastMouseMoveEventInfo.event instanceof MouseEvent) {
+          let mouseCanvasCoordinate: CanvasCoordinate = this.getMouseCanvasCoordinate(event);
+          let previousEvent: MouseEvent = this.lastMouseMoveEventInfo.event;
+          let previousMouseCanvasCoordinate: CanvasCoordinate = this.getMouseCanvasCoordinate(previousEvent);
+
+          let dragDelta: CanvasCoordinate = mouseCanvasCoordinate.minus(previousMouseCanvasCoordinate);
+          grid.translateByCanvasCoordinate(dragDelta);
+        }
+      }
+
+      this.drawCall();
     }
 
     this.lastMouseMoveEventInfo.setEvent(event, null);
-
-    this.drawCall();
   }
 
   // Bestimmt funzt hier nixxx
@@ -200,8 +185,8 @@ export class EventHandler {
 
     // Grid was moved by zoom
     // Get new Canvas Coordinate of zoom center
-    let newCanvasCoordinateOfZoomCenter: Coordinate = this.renderer.grid.getCanvasCoordinateFromGridCoordinate(mouseGridCoordinate);
-    let afterZoomCanvasCoordinateDelta: Coordinate = mouseCanvasCoordinate.minus(newCanvasCoordinateOfZoomCenter);
+    let newCanvasCoordinateOfZoomCenter: CanvasCoordinate = this.renderer.grid.getCanvasCoordinateFromGridCoordinate(mouseGridCoordinate);
+    let afterZoomCanvasCoordinateDelta: CanvasCoordinate = mouseCanvasCoordinate.minus(newCanvasCoordinateOfZoomCenter);
 
     console.log("shouldTranslateByCanvasCoordinate" + afterZoomCanvasCoordinateDelta.toString());
 

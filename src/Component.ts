@@ -1,4 +1,4 @@
-import { Coordinate } from "./Coordinate";
+import { GridCoordinate } from "./Coordinate";
 import { Grid } from "./Grid";
 
 export class ComponentTree {
@@ -17,12 +17,12 @@ export class ComponentTree {
 }
 
 export interface IComponent {
-  gridPosition: Coordinate;
-  size: Coordinate;
+  gridPosition: GridCoordinate;
+  size: GridCoordinate;
   background: string;
-  moveTo(newGridPosition: Coordinate): void;
+  moveTo(newGridPosition: GridCoordinate): void;
   draw(ctx: CanvasRenderingContext2D, grid: Grid): void;
-  isGridCoordinateWithingComponent(grid: Grid, gridPosition: Coordinate): Boolean;
+  isGridCoordinateWithingComponent(grid: Grid, gridPosition: GridCoordinate): Boolean;
 }
 
 interface IGate extends IComponent {
@@ -33,13 +33,13 @@ interface IGate extends IComponent {
 export class AndGate implements IGate {
   inputs: Input[];
   outputs: Output[];
-  gridPosition: Coordinate;
-  size: Coordinate;
+  gridPosition: GridCoordinate;
+  size: GridCoordinate;
   background: string;
 
-  constructor(coordinate: Coordinate) {
+  constructor(coordinate: GridCoordinate) {
     this.gridPosition = coordinate;
-    this.size = new Coordinate(3, 3);
+    this.size = new GridCoordinate(3, 3);
     this.background = "#878787";
 
     /*
@@ -53,12 +53,12 @@ export class AndGate implements IGate {
           */
   }
 
-  moveTo(newGridPosition: Coordinate): void {
+  moveTo(newGridPosition: GridCoordinate): void {
     this.gridPosition.x = newGridPosition.x;
     this.gridPosition.y = newGridPosition.y;
   }
 
-  isGridCoordinateWithingComponent(grid: Grid, gridPosition: Coordinate): Boolean {
+  isGridCoordinateWithingComponent(grid: Grid, gridPosition: GridCoordinate): Boolean {
     let isX1 = this.gridPosition.x - 1 < gridPosition.x;
     let isX2 = gridPosition.x < this.gridPosition.x + this.size.x + 1;
     let isY1 = this.gridPosition.y - 1 < gridPosition.y;

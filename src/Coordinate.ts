@@ -1,4 +1,15 @@
-export class Coordinate {
+export interface ICoordinate {
+  x: number;
+  y: number;
+  plus(newPosition: any): any;
+  minus(newPosition: any): any;
+  inverse(): any;
+  toString(): string;
+}
+
+export class GridCoordinate implements ICoordinate {
+  gridCoordinateDummy: void;
+
   x: number;
   y: number;
 
@@ -7,22 +18,22 @@ export class Coordinate {
     this.y = y;
   }
 
-  plus(newPosition: Coordinate): Coordinate {
+  plus(newPosition: GridCoordinate): GridCoordinate {
     let newX = this.x + newPosition.x;
     let newY = this.y + newPosition.y;
-    return new Coordinate(newX, newY);
+    return new GridCoordinate(newX, newY);
   }
 
-  minus(newPosition: Coordinate): Coordinate {
+  minus(newPosition: GridCoordinate): GridCoordinate {
     let newX = this.x - newPosition.x;
     let newY = this.y - newPosition.y;
-    return new Coordinate(newX, newY);
+    return new GridCoordinate(newX, newY);
   }
 
-  inverse(): Coordinate {
+  inverse(): GridCoordinate {
     let newX = this.x * -1;
     let newY = this.y * -1;
-    return new Coordinate(newX, newY);
+    return new GridCoordinate(newX, newY);
   }
 
   toString(): string {
@@ -31,6 +42,37 @@ export class Coordinate {
   }
 }
 
-export class GridCoordinate extends Coordinate {}
+export class CanvasCoordinate implements ICoordinate {
+  canvasCoordinateDummy: void;
 
-export class CanvasCoordinate extends Coordinate {}
+  x: number;
+  y: number;
+
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+
+  plus(newPosition: CanvasCoordinate): CanvasCoordinate {
+    let newX = this.x + newPosition.x;
+    let newY = this.y + newPosition.y;
+    return new CanvasCoordinate(newX, newY);
+  }
+
+  minus(newPosition: CanvasCoordinate): CanvasCoordinate {
+    let newX = this.x - newPosition.x;
+    let newY = this.y - newPosition.y;
+    return new CanvasCoordinate(newX, newY);
+  }
+
+  inverse(): CanvasCoordinate {
+    let newX = this.x * -1;
+    let newY = this.y * -1;
+    return new CanvasCoordinate(newX, newY);
+  }
+
+  toString(): string {
+    let text: string = "x = " + this.x + " y = " + this.y;
+    return text;
+  }
+}
