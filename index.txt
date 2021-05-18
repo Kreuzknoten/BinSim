@@ -1,0 +1,29 @@
+Wie man die Visual Studio Code für das Projekt konfiguruert
+
+- Node.js installieren über Browser
+- Powershell als Administrator ausfühern und Befehl eingeben    
+    - Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+- in Powershell Konsole von VSC eingeben
+    - npm install -g typescript
+    - npm install webpack webpack-cli ts-loader -D
+    - npm install -g typescript -D
+- das Projekt kann jetzt mit diesem Befehl gebaut werden
+    - npm run build 
+
+- "Live Server" über VSC erweizterungen installieren
+    - "index.html" mit Live Server öffnen
+
+- "Prettier" über VSC erweizterungen installieren
+    - VSC Settings Menü
+        - Format On Save = true
+        - Default Formatter = Prettier
+        - Print Width = 100
+
+
+
+
+
+
+
+- Super Tutorial nachdem das hier alles aufgebaut wurde: 
+    - https://www.youtube.com/watch?v=sOUhEJeJ-kI&list=PL4cUxeGkcC9hOkGbwzgYFmaxB0WiduYJC
