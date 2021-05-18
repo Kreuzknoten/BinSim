@@ -10,9 +10,9 @@
   "author": "Lucas Gerlach",
   "license": "ISC",
   "devDependencies": {
-    "ts-loader": "^7.0.5",
+    "ts-loader": "^9.1.2",
     "typescript": "^3.9.5",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11"
+    "webpack": "^5.36.2",
+    "webpack-cli": "^4.7.0"
   }
 }
