@@ -12,7 +12,8 @@ export class ComponentTree {
   }
 
   removeComponent(component: IComponent) {
-    // TODO
+    let indexOfComponent = this.components.indexOf(component);
+    this.components.splice(indexOfComponent, 1);
   }
 }
 

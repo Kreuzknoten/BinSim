@@ -107,13 +107,26 @@ export class EventHandler {
     if (buttonCode == 0) {
       this.lastLeftMouseDownEventInfo.setEvent(event, hitComponent);
 
+      if (event.shiftKey) {
+        // Delete Component
+        this.isDraggingComponent = false;
+        this.isDraggingGrid = false;
+
+        if (hitComponent != null) {
+          this.renderer.componentTree.removeComponent(hitComponent);
+        }
+      }
+
       if (event.ctrlKey) {
+        // Drag Grid
         this.isDraggingGrid = true;
       } else {
         if (hitComponent == null) {
+          // Create Component
           let newGate = new AndGate(mouseGridCoordinate);
           this.renderer.componentTree.addComponent(newGate);
         } else {
+          // Drag Component
           this.isDraggingComponent = true;
         }
       }
@@ -132,6 +145,7 @@ export class EventHandler {
 
     // Left Mouse Button
     if (buttonCode == 0) {
+      // Stop Dragging
       this.isDraggingComponent = false;
       this.isDraggingGrid = false;
     }
